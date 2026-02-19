@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wingspan Card Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wdth@0,75;1,75&family=Pangolin&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- Burger button (mobile only) -->
+  <button class="burger-btn" id="burger-btn" onclick="toggleMenu()" aria-label="Open editor">☰</button>
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- ── Card preview ── -->
+  <div class="card-panel">
+    <div class="card-wrapper">
+      <div class="content-wrapper" id="content-wrapper">
+        <div id="silhouette-layer"></div>
+
+        <div class="upper-row">
+          <div class="grey-square">
+            <div class="habitats" id="card-habitats"></div>
+            <div class="food"     id="card-food"></div>
+          </div>
+          <div class="title-border">
+            <div class="title"      id="card-name"></div>
+            <div class="native"     id="card-native"></div>
+            <div class="scientific" id="card-scientific"></div>
+          </div>
+        </div>
+
+        <div class="middle-row">
+          <div class="left-column">
+            <span class="points">
+              <span id="card-points"></span>
+              <picture>
+                <source type="image/webp" srcset="assets/icons/point.webp">
+                <source type="image/png"  srcset="assets/icons/point.png">
+                <img class="icon-image" src="assets/icons/point.png" alt="point">
+              </picture>
+            </span>
+            <picture class="nest" id="card-nest"></picture>
+            <div class="eggs" id="card-eggs"></div>
+          </div>
+          <div class="right-column">
+            <span class="wingspan-value" id="card-wingspan-value"></span>
+            <picture>
+              <source type="image/webp" srcset="assets/icons/wingspan.webp">
+              <source type="image/png"  srcset="assets/icons/wingspan.png">
+              <img class="wingspan-icon" src="assets/icons/wingspan.png" alt="wingspan">
+            </picture>
+          </div>
+        </div>
+
+        <div class="power-row" id="card-power-row">
+          <div class="power">
+            <div class="icons" id="card-power-icons"></div>
+            <div class="text"  id="card-power-text"></div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="footer-left"></div>
+          <div class="continent"    id="card-continent"></div>
+          <div class="footer-flavor"><span id="card-flavor"></span></div>
+          <div class="footer-right" id="card-expansion"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Editor panel ── -->
+  <div class="editor-panel" id="editor-panel">
+    <div class="editor-header">
+      <h2>Wingspan Card Designer</h2>
+      <button class="close-btn" onclick="toggleMenu()" aria-label="Close">✕</button>
+    </div>
+
+    <button id="download-btn" onclick="downloadCard()">⬇ Download card</button>
+
+    <!-- Identity -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Identity <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <div class="field-row"><label>Name</label>       <input type="text" id="f-name"       value="Southern Ground Hornbill"></div>
+          <div class="field-row"><label>Native name</label><input type="text" id="f-native"     value=""></div>
+          <div class="field-row"><label>Scientific</label> <input type="text" id="f-scientific" value="Bucorvus leadbeateri"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Habitats -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Habitats <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="f-hab-forest">Forest</label>
+          <label><input type="checkbox" id="f-hab-grassland" checked>Grassland</label>
+          <label><input type="checkbox" id="f-hab-wetland">Wetland</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Food Cost -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Food Cost <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="food-grid">
+          <div class="food-item"><img src="assets/icons/invertebrate.png" alt="invertebrate"><span>Bug</span>     <input type="number" id="f-food-invertebrate" value="1" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/seed.png"         alt="seed">        <span>Seed</span>   <input type="number" id="f-food-seed"         value="0" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/fish.png"         alt="fish">        <span>Fish</span>   <input type="number" id="f-food-fish"         value="0" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/fruit.png"        alt="fruit">       <span>Fruit</span>  <input type="number" id="f-food-fruit"        value="0" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/rodent.png"       alt="rodent">      <span>Rodent</span> <input type="number" id="f-food-rodent"       value="2" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/nectar.png"       alt="nectar">      <span>Nectar</span> <input type="number" id="f-food-nectar"       value="0" min="0" max="5"></div>
+          <div class="food-item"><img src="assets/icons/wild.png"         alt="wild">        <span>Wild</span>   <input type="number" id="f-food-wild"         value="0" min="0" max="5"></div>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="f-food-or">   / (or)</label>
+          <label><input type="checkbox" id="f-food-star"> * (any)</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Stats <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <div class="field-row"><label>Victory pts</label>   <input type="number" id="f-vp"       value="7"  min="0" max="9"></div>
+          <div class="field-row"><label>Nest type</label>
+            <select id="f-nest">
+              <option value="platform" selected>Platform</option>
+              <option value="bowl">Bowl</option>
+              <option value="cavity">Cavity</option>
+              <option value="ground">Ground</option>
+              <option value="star">Wild (star)</option>
+              <option value="">None</option>
+            </select>
+          </div>
+          <div class="field-row"><label>Egg limit</label>    <input type="number" id="f-eggs"     value="1"  min="0" max="6"></div>
+          <div class="field-row"><label>Wingspan (cm)</label><input type="text"   id="f-wingspan" value="150"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Power -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Power <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <div class="field-row"><label>Color</label>
+            <select id="f-power-color">
+              <option value="">None</option>
+              <option value="brown">Brown — When Activated</option>
+              <option value="pink">Pink — Once Between Turns</option>
+              <option value="teal" selected>Teal — Round End</option>
+              <option value="yellow">Yellow — Game End</option>
+              <option value="white">White — When Played</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-title">Power icons</div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="f-icon-predator" checked> Predator</label>
+          <label><input type="checkbox" id="f-icon-flocking">         Flocking</label>
+          <label><input type="checkbox" id="f-icon-bonus">            Bonus card</label>
+        </div>
+        <div class="section-title">Power text <span style="font-weight:normal;font-size:10px;text-transform:none;letter-spacing:0">(use [fish], [forest]…)</span></div>
+        <textarea id="f-power-text" rows="4">At the end of this round, the game ends. Game end play proceeds as normal.</textarea>
+      </div>
+    </div>
+
+    <!-- Flavor Text -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Flavor Text <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <textarea id="f-flavor" rows="3">In several African cultures, the southern ground hornbill is associated with death, destruction or loss.</textarea>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Location <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="section-title">Expansion Set</div>
+        <select id="f-expansion">
+          <option value="">Core</option>
+          <option value="europe">Europe</option>
+          <option value="oceania">Oceania</option>
+          <option value="americas" selected>Americas</option>
+          <option value="asia">Asia</option>
+        </select>
+        <div class="section-title">Continents</div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="f-cont-na">             N. America</label>
+          <label><input type="checkbox" id="f-cont-amn">            C. America</label>
+          <label><input type="checkbox" id="f-cont-ams">            S. America</label>
+          <label><input type="checkbox" id="f-cont-e">              Europe</label>
+          <label><input type="checkbox" id="f-cont-a">              Asia</label>
+          <label><input type="checkbox" id="f-cont-af" checked>     Africa</label>
+          <label><input type="checkbox" id="f-cont-o">              Oceania</label>
+          <label><input type="checkbox" id="f-cont-an">             Antarctica</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Silhouette -->
+    <div class="collapsible">
+      <div class="section-header" onclick="toggleSection(this)">
+        Silhouette <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <input type="text" id="f-silhouette-url" placeholder="Paste image URL…">
+        <button id="remove-bg-btn" onclick="removeSilhouetteBg()">Remove background</button>
+        <div class="silhouette-controls">
+          <div class="nudge-pad">
+            <button onclick="nudgeBg(0,-5)">↑</button>
+            <button onclick="nudgeBg(-5,0)">←</button>
+            <button onclick="resetBg()" title="Reset position">⊙</button>
+            <button onclick="nudgeBg(5,0)">→</button>
+            <button onclick="nudgeBg(0,5)">↓</button>
+            <span class="nudge-readout" id="bg-pos">0, 0</span>
+          </div>
+          <div class="zoom-pad">
+            <button onclick="zoomBg(5)" title="Zoom in">+</button>
+            <button onclick="zoomBg(-5)" title="Zoom out">−</button>
+            <span class="zoom-readout" id="bg-size">85%</span>
+          </div>
+          <div class="zoom-pad">
+            <button id="flip-btn" onclick="flipBg()" title="Flip horizontally">⇄</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
