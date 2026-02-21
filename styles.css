@@ -254,6 +254,27 @@ textarea { resize: vertical; min-height: 52px; }
 #remove-bg-btn:hover:not(:disabled) { background: #e8e4dc; }
 #remove-bg-btn:disabled { color: #aaa; cursor: default; }
 
+.feedback-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #e0dbd3;
+}
+.feedback-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #74685e;
+  text-decoration: none;
+}
+.feedback-link:hover { color: #62430f; }
+.github-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
 /* ── Global icon helpers ── */
 .icon-image { max-width: 1em; max-height: 1em; position: relative; bottom: -0.1em; }
 .icon-picture { max-height: 1em; max-width: 1em; }
