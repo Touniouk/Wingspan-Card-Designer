@@ -337,6 +337,13 @@ textarea { resize: vertical; min-height: 52px; }
 .footer-right { display: flex; flex-direction: row-reverse; align-items: flex-end; height: 100%; }
 .footer-right picture { display: flex; align-items: flex-end; height: 100%; }
 .expansion-indicator { height: 40%; margin-right: 3px; vertical-align: bottom; }
+.custom-expansion-indicator {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-family: CardenioModernBold, SiliciStrong, sans-serif; font-size: 11px;
+  color: #fff; text-transform: uppercase;
+  margin-right: 3px; flex-shrink: 0;
+}
 
 /* ── Burger button ── */
 .burger-btn {

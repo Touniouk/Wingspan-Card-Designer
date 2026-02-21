@@ -219,10 +219,31 @@ function updateCard() {
 
   // Expansion indicator
   const exp = document.getElementById('f-expansion').value;
-  const expBase = 'assets/icons/expansion-indicators/';
-  document.getElementById('card-expansion').innerHTML = exp
-    ? `<picture><source type="image/webp" srcset="${expBase}${exp}.webp"><source type="image/png" srcset="${expBase}${exp}.png"><img class="expansion-indicator" src="${expBase}${exp}.png" alt="${exp}"></picture>`
-    : '';
+    // Custom expansion indicator
+    if (exp === 'custom') {
+      // Render custom buttons 
+      document.getElementById('custom-expansion-options').style.display = '';
+      document.getElementById('card-expansion').innerHTML = `<span id="custom-expansion-indicator" class="custom-expansion-indicator"></span>`;
+      // Update custom indicator on input
+      const updateCustomIndicator = () => {
+        const indicator = document.getElementById('custom-expansion-indicator');
+        const color = document.getElementById('f-expansion-custom-picker').value;
+        const text = document.getElementById('f-expansion-custom-text').value.trim();
+        indicator.style.backgroundColor = color;
+        indicator.textContent = text;
+      };
+      document.getElementById('f-expansion-custom-picker').addEventListener('input', updateCustomIndicator);
+      document.getElementById('f-expansion-custom-text').addEventListener('input', updateCustomIndicator);
+      updateCustomIndicator();
+    } else {
+      // Render image-based indicator
+      const expBase = 'assets/icons/expansion-indicators/';
+      document.getElementById('card-expansion').innerHTML = exp
+        ? `<picture><source type="image/webp" srcset="${expBase}${exp}.webp"><source type="image/png" srcset="${expBase}${exp}.png"><img class="expansion-indicator" src="${expBase}${exp}.png" alt="${exp}"></picture>`
+        : '';
+      // Hide custom buttons
+      document.getElementById('custom-expansion-options').style.display = 'none';
+    }
 }
 
 // Attach listeners

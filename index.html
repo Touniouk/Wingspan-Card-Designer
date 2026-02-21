@@ -205,11 +205,16 @@
         <div class="section-title">Expansion Set</div>
         <select id="f-expansion">
           <option value="">Core</option>
-          <option value="europe">Europe</option>
+          <option value="european">Europe</option>
           <option value="oceania">Oceania</option>
           <option value="americas" selected>Americas</option>
           <option value="asia">Asia</option>
+          <option value="custom">Custom</option>
         </select>
+        <div id="custom-expansion-options" class="field-group" style="display:none;">
+          <div class="field-row"><label for="f-expansion-custom-picker">Colour:</label><input type="color" id="f-expansion-custom-picker" value="#ff66ff"></div>
+          <div class="field-row"><label for="f-expansion-custom-text">Text:</label><input type="text" id="f-expansion-custom-text" value="AB" maxlength="2"></div>
+        </div>
         <div class="section-title">Continents</div>
         <div class="checkbox-group">
           <label><input type="checkbox" id="f-cont-na">             N. America</label>
