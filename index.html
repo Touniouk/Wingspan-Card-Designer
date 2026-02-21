@@ -235,8 +235,13 @@
         Silhouette <span class="chevron">▾</span>
       </div>
       <div class="section-body">
-        <input type="text" id="f-silhouette-url" placeholder="Paste image URL…">
-        <!-- <button id="remove-bg-btn" onclick="removeSilhouetteBg()">Remove background</button> -->
+        <div class="file-upload-row">
+          <label for="f-silhouette-file" class="file-upload-btn">Choose file</label>
+          <input type="file" id="f-silhouette-file" accept="image/*">
+          <span id="f-silhouette-filename" class="file-upload-name">No file chosen</span>
+        </div>
+        <input type="text" id="f-silhouette-url" placeholder="Or paste image URL…">
+        <button id="remove-bg-btn" onclick="removeSilhouetteBg()">Remove background</button>
         <div class="silhouette-controls">
           <div class="nudge-pad">
             <button onclick="nudgeBg(0,-5)">↑</button>

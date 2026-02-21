@@ -1,6 +1,7 @@
 const ICON_BASE = 'assets/icons/';
 const DEFAULT_SILHOUETTE = 'assets/silhouettes/southern-ground-hornbill-2.png';
 let bgX = 0, bgY = 0, bgSize = 85, bgFlipped = false;
+let silhouetteDataUrl = null;
 
 /* ── Menu toggle (mobile) ── */
 function toggleMenu() {
@@ -29,9 +30,10 @@ window.addEventListener('resize', () => {
 
 /* ── Silhouette controls ── */
 function applyBackground() {
-  const url = document.getElementById('f-silhouette-url').value.trim();
+  const urlInput = document.getElementById('f-silhouette-url').value.trim();
+  const url = silhouetteDataUrl || urlInput || DEFAULT_SILHOUETTE;
   const layer = document.getElementById('silhouette-layer');
-  layer.style.backgroundImage = `url('${url || DEFAULT_SILHOUETTE}')`;
+  layer.style.backgroundImage = `url('${url}')`;
   layer.style.backgroundSize = bgSize + '%';
   layer.style.backgroundPosition = `calc(50% + ${bgX}px) calc(50% + ${bgY}px)`;
   layer.style.transform = bgFlipped ? 'scaleX(-1)' : '';
@@ -63,19 +65,23 @@ function resetBg() {
   applyBackground();
 }
 
+const _bgRemovalReady = import('https://esm.sh/@imgly/background-removal')
+  .then(m => { if (typeof m.preload === 'function') m.preload(); return m; })
+  .catch(() => null);
+
 async function removeSilhouetteBg() {
   const btn = document.getElementById('remove-bg-btn');
   const urlInput = document.getElementById('f-silhouette-url');
-  const url = urlInput.value.trim();
-  if (!url) { alert('Paste an image URL first.'); return; }
+  const source = silhouetteDataUrl || urlInput.value.trim();
+  if (!source) { alert('Upload an image or paste a URL first.'); return; }
   btn.disabled = true;
   btn.textContent = 'Loading model…';
   try {
-    const { removeBackground } = await import('https://esm.sh/@imgly/background-removal');
+    const { removeBackground } = await _bgRemovalReady;
     btn.textContent = 'Processing…';
-    const blob = await removeBackground(url);
-    const objectUrl = URL.createObjectURL(blob);
-    urlInput.value = objectUrl;
+    const blob = await removeBackground(source);
+    silhouetteDataUrl = URL.createObjectURL(blob);
+    urlInput.value = '';
     applyBackground();
   } catch (e) {
     console.error(e);
@@ -249,7 +255,22 @@ function updateCard() {
 // Attach listeners
 document.querySelectorAll('.editor-panel input:not(#f-silhouette-url), .editor-panel select, .editor-panel textarea')
   .forEach(el => { el.addEventListener('input', updateCard); el.addEventListener('change', updateCard); });
-document.getElementById('f-silhouette-url').addEventListener('input', applyBackground);
+document.getElementById('f-silhouette-url').addEventListener('input', () => {
+  silhouetteDataUrl = null;
+  applyBackground();
+});
+document.getElementById('f-silhouette-file').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('f-silhouette-filename').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    silhouetteDataUrl = ev.target.result;
+    document.getElementById('f-silhouette-url').value = '';
+    applyBackground();
+  };
+  reader.readAsDataURL(file);
+});
 
 initMobile();
 updateCard();
