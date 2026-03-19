@@ -255,6 +255,9 @@ textarea { resize: vertical; min-height: 52px; }
 #remove-bg-btn:disabled { color: #aaa; cursor: default; }
 
 .feedback-footer {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 6px;
   margin-top: auto;
   padding-top: 10px;
   border-top: 1px solid #e0dbd3;
