@@ -140,6 +140,33 @@ function iconize(text, dark = false, glow = false) {
   return r;
 }
 
+// Converts a CSS hex colour string (e.g. "#3a86c8") to its HSL hue angle (0–360°).
+// The hue angle represents where the colour sits on the colour wheel:
+//   0° = red, 60° = yellow, 120° = green, 180° = cyan, 240° = blue, 300° = magenta.
+function hexToHue(hex) {
+  // Parse each channel from the hex string and normalise to 0–1
+  const red   = parseInt(hex.slice(1, 3), 16) / 255;
+  const green = parseInt(hex.slice(3, 5), 16) / 255;
+  const blue  = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max    = Math.max(red, green, blue);
+  const min    = Math.min(red, green, blue);
+  const chroma = max - min; // colour intensity / range
+
+  // Achromatic colours (grey, white, black) have no hue
+  if (chroma === 0) return 0;
+
+  // Derive hue based on which channel is dominant.
+  // Each branch places the hue in the correct 120° sector of the colour wheel;
+  // the +0/+2/+4 offset shifts it into the right position within that sector.
+  let hue;
+  if (max === red)        hue = (green - blue)  / chroma + (green < blue ? 6 : 0); // 0° sector   (red)
+  else if (max === green) hue = (blue  - red)   / chroma + 2;                       // 120° sector (green)
+  else                    hue = (red   - green) / chroma + 4;                       // 240° sector (blue)
+
+  return hue * 60; // convert from 0–6 scale to degrees
+}
+
 /* ── Card update ── */
 function updateCard() {
   // Identity
@@ -195,7 +222,17 @@ function updateCard() {
   const color = document.getElementById('f-power-color').value;
   const powerRow = document.getElementById('card-power-row');
   powerRow.classList.remove('brown','pink','teal','yellow','white');
-  if (color) powerRow.classList.add(color);
+  powerRow.style.filter = '';
+  const customPowerOptions = document.getElementById('custom-power-options');
+  if (color === 'custom') {
+    customPowerOptions.style.display = '';
+    powerRow.classList.add('brown');
+    const pickerHue = hexToHue(document.getElementById('f-power-custom-picker').value);
+    powerRow.style.filter = `hue-rotate(${pickerHue - 28}deg)`;
+  } else {
+    customPowerOptions.style.display = 'none';
+    if (color) powerRow.classList.add(color);
+  }
 
   // Power icons
   const iconMap = { predator:'predator', flocking:'flocking', bonus:'bonus_cards' };
@@ -207,7 +244,10 @@ function updateCard() {
   // Power text + title
   const powerTitles = { brown:'WHEN ACTIVATED', white:'WHEN PLAYED', pink:'ONCE BETWEEN TURNS', teal:'ROUND END', yellow:'GAME END' };
   const isDark = !!(color && color !== 'white');
-  const titleHtml = color ? `<span class="intro">${powerTitles[color] || ''}: </span>` : '';
+  const titleText = color === 'custom'
+    ? document.getElementById('f-power-custom-text').value.trim()
+    : (powerTitles[color] || '');
+  const titleHtml = color ? `<span class="intro">${titleText}: </span>` : '';
   document.getElementById('card-power-text').innerHTML =
     titleHtml + `<span>${iconize(document.getElementById('f-power-text').value, isDark, isDark)}</span>`;
 
