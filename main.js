@@ -216,7 +216,16 @@ function updateCard() {
 
   // Wingspan
   const ws = document.getElementById('f-wingspan').value.trim();
-  document.getElementById('card-wingspan-value').textContent = ws ? ws + 'cm' : '';
+  const flightless = document.getElementById('f-wingspan-flightless').checked;
+  if (flightless) {
+    document.getElementById('f-wingspan').setAttribute('disabled', 'disabled');
+    document.getElementById('f-wingspan').classList.add('readonly');
+    document.getElementById('card-wingspan-value').textContent = '*';
+  } else {
+    document.getElementById('f-wingspan').removeAttribute('disabled');
+    document.getElementById('f-wingspan').classList.remove('readonly');
+    document.getElementById('card-wingspan-value').textContent = ws ? `${ws} cm` : '';
+  }
 
   // Power color
   const color = document.getElementById('f-power-color').value;
